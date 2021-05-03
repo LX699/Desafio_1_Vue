@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crud</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="crud.css">
+
+</head>
+
+<body>
+
+    <div id="app">
+        <div class="text-center">
+            <h1>CRUD de Productos</h1>
+            <p>(Create, Read, Update, Delete)</p>
+        </div>
+
+        <form class="was-validated">
+            <div v-if="edit_index === -1" class="form-group">
+                <label for="nombre">Nombre:</label>
+                <input v-model="new_nombre" type="text" class="form-control" id="nombre" required>
+                <div class="valid-feedback">Valido.</div>
+                <div class="invalid-feedback">Este campo no puede estar vacio.</div>
+            </div>
+            <div v-else class="form-group">
+                <label for="nombre">Nombre:</label>
+                <input v-model="edit_nombre" type="text" class="form-control" id="nombre" required>
+                <div class="valid-feedback">Valido.</div>
+                <div class="invalid-feedback">Este campo no puede estar vacio.</div>
+            </div>
+
+            <div v-if="edit_index === -1" class="form-group">
+                <label for="descripcion">Descripcion:</label>
+                <input v-model="new_descripcion" type="text" class="form-control" id="descripcion" required>
+                <div class="valid-feedback">Valido.</div>
+                <div class="invalid-feedback">Este campo no puede estar vacio.</div>
+            </div>
+            <div v-else class="form-group">
+                <label for="descripcion">Descripcion:</label>
+                <input v-model="edit_descripcion" type="text" class="form-control" id="descripcion" required>
+                <div class="valid-feedback">Valido.</div>
+                <div class="invalid-feedback">Este campo no puede estar vacio.</div>
+            </div>
+
+            <div v-if="edit_index === -1" class="form-group">
+                <label for="precio">Precio:</label>
+                <input v-model="new_precio" type="number" class="form-control" id="precio" min="1" required>
+                <div class="valid-feedback">Valido.</div>
+                <div class="invalid-feedback">Este campo no puede estar vacio y debe ser mayor a "0"</div>
+            </div>
+            <div v-else class="form-group">
+                <label for="precio">Precio:</label>
+                <input v-model="edit_precio" type="number" class="form-control" id="precio" min="1" required>
+                <div class="valid-feedback">Valido.</div>
+                <div class="invalid-feedback">Este campo no puede estar vacio y debe ser mayor a "0"</div>
+            </div>
+            <div v-if="edit_index === -1" class="boton">
+                <button class="btn btn-primary" @click="add_producto">Agregar</button>
+            </div>
+            <div v-else class="boton">
+                <button class="btn btn-secondary" @click="edit_index = -1">Cancelar</button>
+                <button class="btn btn-success" @click="update_producto(edit_index)">Guardar</button>
+            </div>
+        </form>
+
+
+        <table class="table" v-if="productos[0] != null">
+            <thead class="thead-dark table-bordered ">
+                <tr>
+                    <th>Nombre</th>
+                    <th>Descripcion</th>
+                    <th>Precio</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(producto, index) in productos">
+                    <td>{{producto.nombre}}</td>
+                    <td>{{producto.descripcion}}</td>
+                    <td>{{producto.precio}}</td>
+                    <td>
+                        <button class="btn btn-primary " @click="set_producto(index)">Editar</button>
+                        <button class="btn btn-danger" @click="delete_producto(index)">Eliminar</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <pre>
+            {{$data}}
+        </pre>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        class Producto {
+            constructor(producto = {}) {
+                this.nombre = producto.nombre || ""
+                this.descripcion = producto.descripcion || ""
+                this.precio = producto.precio || ""
+            }
+        }
+
+        const app = new Vue({
+            el: "#app",
+            data: {
+                productos: [],
+
+                new_nombre: "",
+                new_descripcion: "",
+                new_precio: "",
+
+                edit_nombre: "",
+                edit_descripcion: "",
+                edit_precio: "",
+
+                edit_index: -1
+            },
+            methods: {
+                add_producto() {
+                    if (this.new_nombre.length > 0 && this.new_descripcion.length > 0 && this.new_precio > 0) {
+                        this.productos.push(new Producto({
+                            nombre: this.new_nombre,
+                            descripcion: this.new_descripcion,
+                            precio: this.new_precio
+                        }))
+                    }
+
+                    this.new_nombre = "";
+                    this.new_descripcion = "";
+                    this.new_precio = 0;
+                    this.error_nombre = false;
+                    this.error_descripcion = false;
+                    this.error_precio = false;
+
+                },
+
+                delete_producto(index) {
+                    this.productos.splice(index, 1);
+                },
+
+                set_producto(index) {
+                    this.edit_index = index;
+                    this.edit_nombre = this.productos[index].nombre;
+                    this.edit_descripcion = this.productos[index].descripcion;
+                    this.edit_precio = this.productos[index].precio;
+                },
+
+                update_producto(index) {
+                    this.productos[index].nombre = this.edit_nombre;
+                    this.productos[index].descripcion = this.edit_descripcion;
+                    this.productos[index].precio = this.edit_precio;
+
+                    this.edit_index = -1;
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>

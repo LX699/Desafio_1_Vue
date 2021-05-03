@@ -1,0 +1,9 @@
+body {
+    margin: 1% 5%;
+}
+
+.boton {
+    display: flex;
+    justify-content: center;
+    margin: 2%;
+}
